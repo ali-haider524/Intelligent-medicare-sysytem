@@ -1,0 +1,118 @@
+╔══════════════════════════════════════════════════════════════════╗
+║     INTELLIGENT MEDICARE SYSTEM - QUICK START GUIDE              ║
+╚══════════════════════════════════════════════════════════════════╝
+
+🎯 ONLY ONE URL YOU NEED:
+═══════════════════════════════════════════════════════════════════
+
+http://localhost/project/intelligent-medicare-system/
+
+This opens the main hospital website with everything!
+
+═══════════════════════════════════════════════════════════════════
+
+📋 FIRST TIME SETUP (Do Once):
+═══════════════════════════════════════════════════════════════════
+
+1. Make sure XAMPP Apache & MySQL are running
+
+2. Visit: http://localhost/project/intelligent-medicare-system/install_simple.php
+
+3. Click "Install Database" button
+
+4. Done! Database created with sample data
+
+═══════════════════════════════════════════════════════════════════
+
+🔐 LOGIN CREDENTIALS (All use password: password):
+═══════════════════════════════════════════════════════════════════
+
+Patient:  patient@medicare.com / password
+Doctor:   john.smith@medicare.com / password
+Admin:    admin@medicare.com / password
+
+═══════════════════════════════════════════════════════════════════
+
+✅ WHAT YOU CAN DO:
+═══════════════════════════════════════════════════════════════════
+
+ON MAIN WEBSITE (No login needed):
+• Browse hospital information
+• Chat with AI bot (blue button)
+• Register as new patient
+• View doctors and services
+
+AFTER LOGIN AS PATIENT:
+• Book appointments
+• View upcoming appointments
+• See medical history
+• Chat with AI
+
+AFTER LOGIN AS DOCTOR:
+• See today's patient queue
+• Update appointment status
+• Check medicine inventory
+• View patient details
+
+AFTER LOGIN AS ADMIN:
+• View system statistics
+• Manage medicine inventory
+• See low stock alerts
+• Generate reports
+
+═══════════════════════════════════════════════════════════════════
+
+🤖 TEST AI CHATBOT:
+═══════════════════════════════════════════════════════════════════
+
+1. Go to main website
+2. Click blue floating button (bottom-right)
+3. Type: "I have a headache"
+4. See AI response!
+
+Try these messages:
+• "I have a headache and fever"
+• "I want to book an appointment"
+• "Emergency! Chest pain!"
+• "Show me available doctors"
+
+═══════════════════════════════════════════════════════════════════
+
+📁 IMPORTANT FILES (Only These):
+═══════════════════════════════════════════════════════════════════
+
+index.php              → Main entry (redirects to website)
+public_website.php     → Hospital website
+install_simple.php     → Database installer
+pages/login.php        → Login page
+pages/dashboard.php    → Dashboard (auto-routes by role)
+
+═══════════════════════════════════════════════════════════════════
+
+🎓 FOR DEMONSTRATION:
+═══════════════════════════════════════════════════════════════════
+
+1. Open: http://localhost/project/intelligent-medicare-system/
+
+2. Show AI chatbot working
+
+3. Register new patient account
+
+4. Login and book appointment
+
+5. Login as doctor - show patient management
+
+6. Login as admin - show inventory system
+
+═══════════════════════════════════════════════════════════════════
+
+🚀 THAT'S IT! SIMPLE AND CLEAN!
+═══════════════════════════════════════════════════════════════════
+
+Main URL: http://localhost/project/intelligent-medicare-system/
+Database Setup: install_simple.php (run once)
+Login: pages/login.php
+
+Everything else is automatic!
+
+╚══════════════════════════════════════════════════════════════════╝

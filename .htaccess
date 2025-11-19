@@ -1,0 +1,28 @@
+# Enable Rewrite Engine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Set base directory
+    RewriteBase /project/intelligent-medicare-system/
+    
+    # Don't rewrite if file exists
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    
+    # Route everything through index.php
+    RewriteRule ^(.*)$ index.php [L,QSA]
+</IfModule>
+
+# Disable directory browsing
+Options -Indexes
+
+# Set default index files
+DirectoryIndex index.php index.html demo.html
+
+# PHP settings
+<IfModule mod_php7.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    php_value max_execution_time 300
+    php_value max_input_time 300
+</IfModule>
