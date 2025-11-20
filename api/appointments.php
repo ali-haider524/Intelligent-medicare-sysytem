@@ -4,7 +4,14 @@ require_once __DIR__ . '/../config.php';
 
 header('Content-Type: application/json');
 
+// Get action from GET, POST, or JSON input
 $action = $_GET['action'] ?? $_POST['action'] ?? '';
+
+// If no action yet, try to get from JSON input
+if (empty($action)) {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $action = $input['action'] ?? '';
+}
 
 switch ($action) {
     case 'get_all':
@@ -50,7 +57,7 @@ function getAllAppointments() {
             LEFT JOIN users u1 ON a.patient_id = u1.id
             LEFT JOIN users u2 ON a.doctor_id = u2.id
             LEFT JOIN departments d ON a.department_id = d.id
-            ORDER BY a.appointment_date DESC, a.appointment_time DESC
+            ORDER BY a.appointment_date DESC, a.id DESC
         ");
         
         $appointments = $stmt->fetchAll();
@@ -68,7 +75,7 @@ function getAllAppointments() {
                 LEFT JOIN users u1 ON a.patient_id = u1.id
                 LEFT JOIN users u2 ON a.doctor_id = u2.id
                 LEFT JOIN departments d ON a.department_id = d.id
-                ORDER BY a.appointment_date DESC, a.appointment_time DESC
+                ORDER BY a.appointment_date DESC, a.id DESC
             ");
             $appointments = $stmt->fetchAll();
         }

@@ -36,9 +36,22 @@ try {
     // Get today's revenue (mock data for now)
     $todayRevenue = 12450;
     
-    // Get low stock count
-    $stmt = $pdo->query("SELECT COUNT(*) as count FROM medicines WHERE quantity < 100");
-    $lowStockCount = $stmt->fetch()['count'];
+    // Get low stock count (check if medicines table exists and has quantity column)
+    $lowStockCount = 0;
+    try {
+        $stmt = $pdo->query("SHOW TABLES LIKE 'medicines'");
+        if ($stmt->fetch()) {
+            // Check if quantity column exists
+            $stmt = $pdo->query("SHOW COLUMNS FROM medicines LIKE 'quantity'");
+            if ($stmt->fetch()) {
+                $stmt = $pdo->query("SELECT COUNT(*) as count FROM medicines WHERE quantity < 100");
+                $lowStockCount = $stmt->fetch()['count'];
+            }
+        }
+    } catch (Exception $e) {
+        // If medicines table doesn't exist or has issues, just use 0
+        $lowStockCount = 0;
+    }
     
     echo json_encode([
         'success' => true,

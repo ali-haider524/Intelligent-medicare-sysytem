@@ -5,11 +5,18 @@
             <h2 class="text-xl font-bold text-gray-800">Appointments Management</h2>
             <p class="text-gray-500">Manage and track all patient appointments</p>
         </div>
-        <button @click="showNewAppointmentModal = true" 
-                class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition flex items-center space-x-2">
-            <i class="fas fa-plus text-sm"></i>
-            <span>New Appointment</span>
-        </button>
+        <div class="flex space-x-3">
+            <button @click="showEmergencyModal = true" 
+                    class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:shadow-lg transition flex items-center space-x-2">
+                <i class="fas fa-ambulance text-sm"></i>
+                <span>🚨 Emergency</span>
+            </button>
+            <button @click="showNewAppointmentModal = true" 
+                    class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition flex items-center space-x-2">
+                <i class="fas fa-plus text-sm"></i>
+                <span>New Appointment</span>
+            </button>
+        </div>
     </div>
 
     <!-- Stats Cards - Enhanced Visibility -->
@@ -191,40 +198,158 @@
             <div class="p-6">
                 <form @submit.prevent="createNewAppointment()">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Patient Information -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Patient Name</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Patient Name *</label>
                             <input type="text" x-model="newAppointment.patient_name" required
                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Doctor</label>
-                            <select x-model="newAppointment.doctor_id" required
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                            <input type="tel" x-model="newAppointment.phone" required placeholder="+1234567890"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email (Optional)</label>
+                            <input type="email" x-model="newAppointment.email" placeholder="patient@example.com"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Doctor *</label>
+                            <select x-model="newAppointment.doctor_id" required @change="updateConsultationFee()"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                 <option value="">Select Doctor</option>
-                                <option value="1">Dr. Smith</option>
-                                <option value="2">Dr. Johnson</option>
-                                <option value="3">Dr. Brown</option>
+                                <option value="1" data-fee="500">Dr. Smith - General Medicine (₹500)</option>
+                                <option value="2" data-fee="800">Dr. Johnson - Cardiology (₹800)</option>
+                                <option value="3" data-fee="1000">Dr. Brown - Neurology (₹1000)</option>
                             </select>
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Date *</label>
                             <input type="date" x-model="newAppointment.date" required
                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Time</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Time *</label>
                             <input type="time" x-model="newAppointment.time" required
                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         </div>
                         
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Reason for Visit</label>
-                            <textarea x-model="newAppointment.reason" rows="4" placeholder="Enter reason for visit..."
-                                      style="color: #1f2937; background-color: #ffffff;"
-                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"></textarea>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Symptoms/Reason for Visit *</label>
+                            <select x-model="newAppointment.reason" required @change="handleReasonChange()"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="">Select symptoms/reason</option>
+                                
+                                <!-- General Medicine Symptoms -->
+                                <template x-if="newAppointment.doctor_id === '1'">
+                                    <optgroup label="General Medicine Symptoms">
+                                        <option value="Routine Health Checkup">Routine Health Checkup</option>
+                                        <option value="Fever and Cold">Fever and Cold</option>
+                                        <option value="Body Pain/Muscle Ache">Body Pain/Muscle Ache</option>
+                                        <option value="Headache">Headache</option>
+                                        <option value="Stomach Problems">Stomach Problems</option>
+                                        <option value="Blood Pressure Issues">Blood Pressure Issues</option>
+                                        <option value="Diabetes Consultation">Diabetes Consultation</option>
+                                        <option value="General Health Screening">General Health Screening</option>
+                                    </optgroup>
+                                </template>
+                                
+                                <!-- Cardiology Symptoms -->
+                                <template x-if="newAppointment.doctor_id === '2'">
+                                    <optgroup label="Cardiology Symptoms">
+                                        <option value="Chest Pain">Chest Pain</option>
+                                        <option value="Heart Palpitations">Heart Palpitations</option>
+                                        <option value="High Blood Pressure">High Blood Pressure</option>
+                                        <option value="Shortness of Breath">Shortness of Breath</option>
+                                        <option value="Heart Disease Follow-up">Heart Disease Follow-up</option>
+                                        <option value="ECG/Echo Test">ECG/Echo Test</option>
+                                        <option value="Cholesterol Management">Cholesterol Management</option>
+                                        <option value="Cardiac Risk Assessment">Cardiac Risk Assessment</option>
+                                    </optgroup>
+                                </template>
+                                
+                                <!-- Neurology Symptoms -->
+                                <template x-if="newAppointment.doctor_id === '3'">
+                                    <optgroup label="Neurology Symptoms">
+                                        <option value="Severe Headache/Migraine">Severe Headache/Migraine</option>
+                                        <option value="Dizziness/Vertigo">Dizziness/Vertigo</option>
+                                        <option value="Memory Problems">Memory Problems</option>
+                                        <option value="Seizures">Seizures</option>
+                                        <option value="Nerve Pain/Numbness">Nerve Pain/Numbness</option>
+                                        <option value="Sleep Disorders">Sleep Disorders</option>
+                                        <option value="Brain/Spine Issues">Brain/Spine Issues</option>
+                                        <option value="Neurological Examination">Neurological Examination</option>
+                                    </optgroup>
+                                </template>
+                                
+                                <!-- Emergency Options -->
+                                <optgroup label="Emergency Cases">
+                                    <option value="EMERGENCY - Severe Chest Pain" style="color: red; font-weight: bold;">🚨 EMERGENCY - Severe Chest Pain</option>
+                                    <option value="EMERGENCY - Difficulty Breathing" style="color: red; font-weight: bold;">🚨 EMERGENCY - Difficulty Breathing</option>
+                                    <option value="EMERGENCY - Severe Head Injury" style="color: red; font-weight: bold;">🚨 EMERGENCY - Severe Head Injury</option>
+                                    <option value="EMERGENCY - Unconscious/Fainting" style="color: red; font-weight: bold;">🚨 EMERGENCY - Unconscious/Fainting</option>
+                                    <option value="EMERGENCY - Severe Bleeding" style="color: red; font-weight: bold;">🚨 EMERGENCY - Severe Bleeding</option>
+                                </optgroup>
+                                
+                                <option value="Other">Other (Please specify below)</option>
+                            </select>
+                            
+                            <!-- Additional Details Text Box -->
+                            <div class="mt-3">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Additional Details (Optional)</label>
+                                <textarea x-model="newAppointment.additional_notes" rows="2" 
+                                          placeholder="Any additional symptoms, medical history, or specific concerns..."
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"></textarea>
+                            </div>
+                            
+                            <!-- Emergency Alert -->
+                            <div x-show="newAppointment.reason && newAppointment.reason.includes('EMERGENCY')" 
+                                 class="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                                <div class="flex items-center">
+                                    <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
+                                    <span class="text-red-800 font-semibold">EMERGENCY CASE DETECTED</span>
+                                </div>
+                                <p class="text-red-700 text-sm mt-1">This will be prioritized and the doctor will be notified immediately.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Information -->
+                        <div class="md:col-span-2 bg-blue-50 p-4 rounded-lg border">
+                            <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                                <i class="fas fa-credit-card mr-2 text-blue-600"></i>
+                                Payment Information
+                            </h4>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Consultation Fee</label>
+                                    <div class="text-2xl font-bold text-green-600">₹<span x-text="newAppointment.consultation_fee">0</span></div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method *</label>
+                                    <select x-model="newAppointment.payment_method" required
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="">Select Payment</option>
+                                        <option value="cash">Cash</option>
+                                        <option value="card">Card</option>
+                                        <option value="online">Online Payment</option>
+                                        <option value="insurance">Insurance</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Payment Status</label>
+                                    <select x-model="newAppointment.payment_status" required
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="paid">Paid</option>
+                                        <option value="pending">Pending</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -236,6 +361,116 @@
                         <button type="submit"
                                 class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                             Create Appointment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Modal -->
+    <div x-show="showEmergencyModal" 
+         x-cloak
+         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+         @click.self="showEmergencyModal = false">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border-l-4 border-red-500">
+            <div class="p-6 border-b border-gray-200 bg-red-50">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-red-800 flex items-center">
+                        <i class="fas fa-ambulance mr-2"></i>
+                        🚨 Emergency Case Registration
+                    </h3>
+                    <button @click="showEmergencyModal = false" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <p class="text-red-700 text-sm mt-2">For life-threatening conditions requiring immediate medical attention</p>
+            </div>
+            
+            <div class="p-6">
+                <form @submit.prevent="createEmergencyCase()">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Patient Information -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Patient Name *</label>
+                            <input type="text" x-model="emergencyCase.patient_name" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                            <input type="tel" x-model="emergencyCase.phone" required placeholder="+1234567890"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Contact</label>
+                            <input type="tel" x-model="emergencyCase.emergency_contact" placeholder="Family member phone"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Doctor *</label>
+                            <select x-model="emergencyCase.doctor_id" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                <option value="">Select Emergency Doctor</option>
+                                <option value="4">Dr. Emergency - ER Specialist</option>
+                                <option value="5">Dr. Trauma - Trauma Surgeon</option>
+                                <option value="6">Dr. Critical - ICU Specialist</option>
+                            </select>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Condition *</label>
+                            <select x-model="emergencyCase.condition" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                <option value="">Select emergency condition</option>
+                                <option value="Cardiac Arrest">🫀 Cardiac Arrest</option>
+                                <option value="Severe Chest Pain">💔 Severe Chest Pain</option>
+                                <option value="Difficulty Breathing">🫁 Difficulty Breathing</option>
+                                <option value="Severe Head Injury">🧠 Severe Head Injury</option>
+                                <option value="Major Bleeding">🩸 Major Bleeding</option>
+                                <option value="Unconscious/Fainting">😵 Unconscious/Fainting</option>
+                                <option value="Severe Burns">🔥 Severe Burns</option>
+                                <option value="Poisoning">☠️ Poisoning</option>
+                                <option value="Stroke Symptoms">🧠 Stroke Symptoms</option>
+                                <option value="Severe Allergic Reaction">⚠️ Severe Allergic Reaction</option>
+                            </select>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Emergency Details</label>
+                            <textarea x-model="emergencyCase.details" rows="3" required
+                                      placeholder="Describe the emergency situation, symptoms, how it happened..."
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"></textarea>
+                        </div>
+                        
+                        <!-- Emergency Notice -->
+                        <div class="md:col-span-2 bg-red-50 p-4 rounded-lg border border-red-200">
+                            <div class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-red-600 mr-3 mt-1"></i>
+                                <div>
+                                    <h4 class="font-semibold text-red-800 mb-2">Emergency Case Protocol</h4>
+                                    <ul class="text-red-700 text-sm space-y-1">
+                                        <li>• <strong>Payment:</strong> Treatment first, billing later</li>
+                                        <li>• <strong>Priority:</strong> Immediate attention, no waiting</li>
+                                        <li>• <strong>Doctor:</strong> Emergency specialist will be assigned</li>
+                                        <li>• <strong>Location:</strong> Patient will be directed to Emergency Room</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-end space-x-3">
+                        <button type="button" @click="showEmergencyModal = false"
+                                class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center space-x-2">
+                            <i class="fas fa-ambulance"></i>
+                            <span>Register Emergency Case</span>
                         </button>
                     </div>
                 </form>
@@ -254,13 +489,28 @@ function appointmentsManager() {
         appointments: [],
         filter: 'all',
         showNewAppointmentModal: false,
+        showEmergencyModal: false,
         loading: false,
+        emergencyCase: {
+            patient_name: '',
+            phone: '',
+            emergency_contact: '',
+            doctor_id: '',
+            condition: '',
+            details: ''
+        },
         newAppointment: {
             patient_name: '',
+            phone: '',
+            email: '',
             doctor_id: '',
             date: '',
             time: '',
-            reason: ''
+            reason: '',
+            additional_notes: '',
+            consultation_fee: 0,
+            payment_method: '',
+            payment_status: 'paid'
         },
         
         get filteredAppointments() {
@@ -355,18 +605,18 @@ function appointmentsManager() {
                 const data = await response.json();
                 if (data.success) {
                     await this.loadAppointments();
-                    alert('Appointment status updated successfully!');
+                    this.showToast('Status updated successfully!', 'success');
                 } else {
-                    alert('Error: ' + data.message);
+                    this.showToast('Error: ' + data.message, 'error');
                 }
             } catch (error) {
                 console.error('Error updating appointment:', error);
-                alert('Network error occurred');
+                this.showToast('Network error occurred', 'error');
             }
         },
         
         async deleteAppointment(id) {
-            if (!confirm('Are you sure you want to delete this appointment?\n\nThis action cannot be undone.')) return;
+            if (!confirm('Delete this appointment?')) return;
             
             try {
                 const response = await fetch('../api/appointments.php', {
@@ -378,21 +628,70 @@ function appointmentsManager() {
                 const data = await response.json();
                 if (data.success) {
                     await this.loadAppointments();
-                    alert('Appointment deleted successfully!');
+                    this.showToast('Appointment deleted', 'success');
                 } else {
-                    alert('Error: ' + data.message);
+                    this.showToast('Error: ' + data.message, 'error');
                 }
             } catch (error) {
                 console.error('Error deleting appointment:', error);
-                alert('Network error occurred');
+                this.showToast('Network error occurred', 'error');
             }
+        },
+        
+        updateConsultationFee() {
+            const doctorFees = {
+                '1': 500,  // Dr. Smith - General Medicine
+                '2': 800,  // Dr. Johnson - Cardiology  
+                '3': 1000  // Dr. Brown - Neurology
+            };
+            
+            this.newAppointment.consultation_fee = doctorFees[this.newAppointment.doctor_id] || 0;
+            // Reset reason when doctor changes
+            this.newAppointment.reason = '';
+        },
+        
+        handleReasonChange() {
+            // Check if emergency case is selected
+            if (this.newAppointment.reason && this.newAppointment.reason.includes('EMERGENCY')) {
+                // Auto-set payment status to paid for emergencies
+                this.newAppointment.payment_status = 'paid';
+                // Show emergency alert
+                this.showToast('🚨 Emergency case detected! This will be prioritized.', 'error');
+            }
+        },
+        
+        showToast(message, type = 'success') {
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white z-50 transform transition-all duration-300 ${
+                type === 'success' ? 'bg-green-500' : 'bg-red-500'
+            }`;
+            toast.textContent = message;
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-20px)';
+            
+            document.body.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+            }, 10);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         },
         
         async createNewAppointment() {
             try {
-                if (!this.newAppointment.patient_name || !this.newAppointment.doctor_id || 
-                    !this.newAppointment.date || !this.newAppointment.time) {
-                    alert('Please fill all required fields');
+                if (!this.newAppointment.patient_name || !this.newAppointment.phone || 
+                    !this.newAppointment.doctor_id || !this.newAppointment.date || 
+                    !this.newAppointment.time || !this.newAppointment.payment_method) {
+                    this.showToast('Please fill all required fields', 'error');
                     return;
                 }
                 
@@ -403,7 +702,8 @@ function appointmentsManager() {
                     body: JSON.stringify({
                         action: 'get_or_create',
                         name: this.newAppointment.patient_name,
-                        email: this.newAppointment.patient_name.toLowerCase().replace(/\s+/g, '.') + '@patient.com'
+                        phone: this.newAppointment.phone,
+                        email: this.newAppointment.email || null
                     })
                 });
                 
@@ -429,30 +729,112 @@ function appointmentsManager() {
                 console.log('Create response:', data);
                 
                 if (data.success) {
+                    // Show toast notification first
+                    this.showToast('✅ Appointment created successfully!', 'success');
+                    
                     // Close modal
                     this.showNewAppointmentModal = false;
                     
                     // Reset form
                     this.newAppointment = {
                         patient_name: '',
+                        phone: '',
+                        email: '',
                         doctor_id: '',
                         date: '',
                         time: '',
-                        reason: ''
+                        reason: '',
+                        additional_notes: '',
+                        consultation_fee: 0,
+                        payment_method: '',
+                        payment_status: 'paid'
                     };
                     
-                    // Reload appointments to show new one
+                    // Reload appointments to update stats and table
                     await this.loadAppointments();
                     
-                    // Show success message
-                    alert('✅ Appointment created successfully!');
+                    console.log('✅ Appointments reloaded. Total:', this.appointments.length);
                 } else {
-                    alert('Error: ' + (data.message || 'Failed to create appointment'));
+                    this.showToast('Error: ' + (data.message || 'Failed to create appointment'), 'error');
                 }
                 
             } catch (error) {
                 console.error('Error creating appointment:', error);
-                alert('Network error: ' + error.message);
+                this.showToast('Network error: ' + error.message, 'error');
+            }
+        },
+        
+        async createEmergencyCase() {
+            try {
+                if (!this.emergencyCase.patient_name || !this.emergencyCase.phone || 
+                    !this.emergencyCase.doctor_id || !this.emergencyCase.condition || 
+                    !this.emergencyCase.details) {
+                    this.showToast('Please fill all required fields', 'error');
+                    return;
+                }
+                
+                // Get or create patient ID
+                const patientResponse = await fetch('../api/patients.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'get_or_create',
+                        name: this.emergencyCase.patient_name,
+                        phone: this.emergencyCase.phone,
+                        emergency_contact: this.emergencyCase.emergency_contact
+                    })
+                });
+                
+                const patientData = await patientResponse.json();
+                const patientId = patientData.patient_id || 1;
+                
+                // Create emergency appointment with immediate scheduling
+                const response = await fetch('../api/appointments.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'create',
+                        patient_id: patientId,
+                        doctor_id: this.emergencyCase.doctor_id,
+                        department_id: 1, // Emergency department
+                        appointment_date: new Date().toISOString().split('T')[0],
+                        appointment_time: new Date().toTimeString().split(' ')[0],
+                        reason: `🚨 EMERGENCY: ${this.emergencyCase.condition}`,
+                        notes: `Emergency Details: ${this.emergencyCase.details}\nEmergency Contact: ${this.emergencyCase.emergency_contact}`
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('Emergency case response:', data);
+                
+                if (data.success) {
+                    // Show toast notification first
+                    this.showToast('🚨 Emergency case registered successfully!', 'success');
+                    
+                    // Close modal
+                    this.showEmergencyModal = false;
+                    
+                    // Reset form
+                    this.emergencyCase = {
+                        patient_name: '',
+                        phone: '',
+                        emergency_contact: '',
+                        doctor_id: '',
+                        condition: '',
+                        details: ''
+                    };
+                    
+                    // Reload appointments to update stats and table
+                    await this.loadAppointments();
+                    
+                    console.log('✅ Emergency case created and appointments reloaded');
+                } else {
+                    this.showToast('Error: ' + (data.message || 'Failed to create emergency case'), 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error creating emergency case:', error);
+                this.showToast('Network error: ' + error.message, 'error');
             }
         }
     }

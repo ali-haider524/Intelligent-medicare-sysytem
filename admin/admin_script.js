@@ -322,3 +322,4 @@ document.addEventListener('alpine:initialized', () => {
         }
     }, 1000);
 });
+

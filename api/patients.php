@@ -54,9 +54,9 @@ function getOrCreatePatient($data) {
     try {
         $pdo = getDBConnection();
         
-        // First try to find existing patient by name
-        $stmt = $pdo->prepare("SELECT id FROM users WHERE name = ? AND role = 'patient'");
-        $stmt->execute([$data['name']]);
+        // First try to find existing patient by phone or name
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE (phone = ? OR name = ?) AND role = 'patient'");
+        $stmt->execute([$data['phone'], $data['name']]);
         $existing = $stmt->fetch();
         
         if ($existing) {
@@ -70,13 +70,14 @@ function getOrCreatePatient($data) {
         
         // Create new patient
         $stmt = $pdo->prepare("
-            INSERT INTO users (name, email, role, password, created_at)
-            VALUES (?, ?, 'patient', ?, NOW())
+            INSERT INTO users (name, email, phone, role, password, created_at)
+            VALUES (?, ?, ?, 'patient', ?, NOW())
         ");
         
         $stmt->execute([
             $data['name'],
-            $data['email'],
+            $data['email'] ?: 'patient@example.com', // Provide default email if empty
+            $data['phone'],
             password_hash('password', PASSWORD_DEFAULT)
         ]);
         
@@ -107,7 +108,7 @@ function createPatient($data) {
         
         $stmt->execute([
             $data['name'],
-            $data['email'],
+            $data['email'] ?: 'patient@example.com', // Provide default email if empty
             $data['phone'] ?? null,
             password_hash('password', PASSWORD_DEFAULT)
         ]);
